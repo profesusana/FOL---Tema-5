@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#c65d18">
+<title>Tema 5 FOL · Primeros auxilios</title>
+<style>
+:root{--p:#c65d18;--pd:#98400d;--pl:#fff0e5;--bg:#f8f7f4;--card:#fff;--ink:#29372f;--muted:#6f7b74;--line:#e6e4dd;--good:#177548;--goodbg:#e6f6ec;--bad:#b42332;--badbg:#fff0f0;--shadow:0 12px 34px rgba(67,50,32,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.55}
+button,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,select:focus-visible{outline:3px solid #f3b077;outline-offset:3px}
+.wrap{max-width:1120px;margin:auto}
+header{color:white;background:linear-gradient(125deg,#8e390c,#cd671e 68%,#e18136);padding:22px 20px 34px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;gap:11px;align-items:center;font-weight:850;letter-spacing:.04em}
+.brand-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:#ffffff22;font-size:25px}
+.tag{font-size:.8rem;font-weight:800;background:#ffffff22;border:1px solid #ffffff40;padding:6px 11px;border-radius:999px}
+.credit{display:inline-block;margin-top:17px;padding:9px 13px;border-radius:10px;background:#ffffff19;border:1px solid #ffffff4d;font-weight:800;font-size:.94rem}
+.hero{padding-top:25px;max-width:780px}
+.eyebrow{text-transform:uppercase;font-size:.76rem;letter-spacing:.13em;font-weight:850;opacity:.86}
+h1{font-size:clamp(2.1rem,5vw,3.5rem);line-height:1.06;letter-spacing:-.04em;margin:8px 0 12px}
+.hero p{margin:0;color:#fff0e6;font-size:1.02rem;max-width:720px}
+main{padding:27px 20px 48px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,3vw,30px);box-shadow:var(--shadow);margin-bottom:21px}
+h2{font-size:clamp(1.35rem,3vw,1.8rem);line-height:1.2;margin:0 0 8px;letter-spacing:-.02em}
+h3{margin:0 0 7px}
+.intro,.muted{color:var(--muted)}
+.intro{margin:0 0 20px}
+.topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.topic{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:132px;padding:16px;text-align:left;border:1px solid var(--line);border-radius:15px;background:white;color:var(--ink);transition:.15s}
+.topic:hover{transform:translateY(-2px);border-color:#df9b6c}
+.topic.selected{padding:15px;border:2px solid var(--p);background:var(--pl)}
+.topic .ico{font-size:1.55rem}
+.topic strong{line-height:1.25}
+.topic small{margin-top:auto;color:var(--muted)}
+.settings{display:grid;grid-template-columns:1fr minmax(190px,.65fr);gap:18px;align-items:end}
+label{display:block;font-weight:800;margin-bottom:7px}
+select{border:1px solid #d7d8d0;border-radius:11px;min-height:47px;padding:10px 12px;background:white;color:var(--ink);width:100%}
+.selection{padding:12px;border:1px solid var(--line);background:#fcfaf7;border-radius:11px;min-height:47px;font-weight:700}
+.note{font-size:.87rem;color:var(--muted);margin-top:9px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:11px;min-height:45px;padding:11px 17px;font-weight:850;transition:transform .12s,background .12s}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn:disabled{opacity:.46;cursor:not-allowed}
+.primary{background:var(--p);color:white}
+.primary:hover:not(:disabled){background:var(--pd)}
+.soft{background:var(--pl);color:var(--pd)}
+.outline{background:white;border:1px solid var(--line);color:var(--ink)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:21px}
+#test,#results{display:none}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:19px}
+.pill{background:var(--pl);color:var(--pd);font-size:.83rem;font-weight:850;padding:7px 11px;border-radius:999px}
+.status{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.kicker{font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;color:var(--p);font-weight:900}
+.track{height:8px;background:#eee9e1;border-radius:100px;overflow:hidden;margin:12px 0 25px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#c65d18,#ec9a55);transition:width .2s}
+.qtext{font-size:clamp(1.15rem,2.4vw,1.55rem);line-height:1.45;margin:9px 0 22px;letter-spacing:-.012em}
+.options{display:grid;gap:11px}
+.option{display:flex;align-items:flex-start;text-align:left;width:100%;gap:12px;padding:14px;border:1px solid var(--line);border-radius:13px;background:white;color:var(--ink);line-height:1.5}
+.option:hover:not(:disabled){border-color:#dfa477;background:#fffaf5}
+.option:disabled{cursor:default}
+.letter{display:grid;place-items:center;flex:0 0 31px;width:31px;height:31px;border-radius:9px;background:#f1eee8;color:#6c6259;font-weight:900}
+.option.selected{padding:13px;border:2px solid var(--p);background:var(--pl)}
+.option.selected .letter{background:var(--p);color:white}
+.option.correct{padding:13px;border:2px solid var(--good);background:var(--goodbg)}
+.option.correct .letter{background:var(--good);color:white}
+.option.incorrect{padding:13px;border:2px solid var(--bad);background:var(--badbg)}
+.option.incorrect .letter{background:var(--bad);color:white}
+.feedback{display:none;margin-top:19px;padding:16px;border-radius:13px;border:1px solid var(--line)}
+.feedback.show{display:block}
+.feedback.good{background:var(--goodbg);border-color:#b8e4c7}
+.feedback.bad{background:var(--badbg);border-color:#f0c2c8}
+.ftitle{font-weight:900;margin-bottom:5px}
+.good .ftitle{color:var(--good)}
+.bad .ftitle{color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:23px}
+.scoreline{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:22px 0}
+.circle{display:grid;place-items:center;text-align:center;width:125px;height:125px;border-radius:50%;background:var(--pl);border:8px solid #f4d4bc}
+.circle strong{display:block;font-size:2rem;line-height:1.1}
+.circle span{font-size:.8rem;color:var(--muted)}
+.stats{flex:1;min-width:205px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{padding:13px;border:1px solid var(--line);border-radius:12px}
+.stat strong{display:block;font-size:1.4rem}
+.stat span{color:var(--muted);font-size:.85rem}
+.review{border-top:1px solid var(--line);padding:15px 0}
+.review h4{margin:0 0 7px;line-height:1.45}
+.review p{margin:5px 0;font-size:.92rem}
+.goodtxt{color:var(--good)}
+.badtxt{color:var(--bad)}
+.emergency{font-size:.9rem;padding:12px 14px;border-left:4px solid var(--p);background:#fff8f1;border-radius:8px;margin-top:18px;color:#633b20}
+footer{text-align:center;color:var(--muted);font-size:.84rem;padding:10px 20px 30px}
+.hide{display:none!important}
+@media(max-width:800px){.topics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){header{padding:19px 14px 27px}main{padding:18px 12px 32px}.topics{grid-template-columns:1fr}.topic{min-height:100px}.settings{grid-template-columns:1fr}.panel{border-radius:16px;padding:17px}.actions .btn,.nav .btn{flex:1;width:100%}.toolbar .btn{width:auto}.circle{width:105px;height:105px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand"><div class="brand-icon" aria-hidden="true">✚</div><span>APRENDE · PRACTICA · ACTÚA</span></div>
+      <span class="tag">FOL · Tema 5</span>
+    </div>
+    <div class="credit">Elaboración de Susana Felipe Ortiz con ayuda de la IA</div>
+    <div class="hero">
+      <div class="eyebrow">Formación y Orientación Laboral</div>
+      <h1>Primeros auxilios</h1>
+      <p>Entrena tu capacidad para interpretar situaciones de emergencia, priorizar actuaciones y seleccionar los primeros auxilios adecuados según el Tema 5.</p>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+<section id="home" class="panel">
+  <h2>Elige tu reto</h2>
+  <p class="intro">Selecciona un bloque del tema o trabaja la unidad completa. Las preguntas se mezclan dentro de la selección y cada respuesta incluye una explicación.</p>
+  <div id="topics" class="topics"></div>
+  <hr style="border:0;border-top:1px solid var(--line);margin:25px 0">
+  <div class="settings">
+    <div>
+      <label for="amount">Número de preguntas</label>
+      <select id="amount">
+        <option value="10">10 preguntas</option>
+        <option value="15">15 preguntas</option>
+        <option value="20">20 preguntas</option>
+        <option value="30">30 preguntas</option>
+        <option value="50">50 preguntas</option>
+        <option value="100">100 preguntas</option>
+        <option value="150">150 preguntas</option>
+        <option value="all">Todas las preguntas disponibles</option>
+      </select>
+    </div>
+    <div>
+      <label>Tu selección</label>
+      <div id="selection" class="selection">Todo el tema · 150 preguntas</div>
+      <div id="amountNote" class="note"></div>
+    </div>
+  </div>
+  <div class="actions"><button id="start" class="btn primary" type="button">Comenzar test →</button></div>
+  <div class="emergency"><strong>Importante:</strong> este recurso es didáctico y se basa en el material del Tema 5. Ante una emergencia real, protege la escena, llama al 112 y sigue las instrucciones de los servicios de emergencias. Las pautas clínicas deben aprenderse y aplicarse conforme a la formación y los protocolos vigentes.</div>
+</section>
+
+<section id="test" class="panel">
+  <div class="toolbar">
+    <button class="btn outline" type="button" id="homeFromTest">← Volver al inicio</button>
+    <span id="topicPill" class="pill">Todo el tema</span>
+  </div>
+  <div class="status">
+    <span id="counter" class="kicker">Pregunta 1 de 10</span>
+    <span id="answered" class="muted">Respuestas comprobadas: 0</span>
+  </div>
+  <div id="progress" class="track" role="progressbar" aria-label="Progreso del test" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="bar" class="fill"></div></div>
+  <div id="qTopic" class="kicker"></div>
+  <h2 id="question" class="qtext"></h2>
+  <div id="options" class="options"></div>
+  <div id="feedback" class="feedback" aria-live="polite"></div>
+  <div class="nav">
+    <button id="check" class="btn soft" type="button" disabled>Comprobar respuesta</button>
+    <button id="next" class="btn primary" type="button" disabled>Siguiente pregunta →</button>
+  </div>
+</section>
+
+<section id="results" class="panel">
+  <span class="pill">Test finalizado</span>
+  <h2 style="margin-top:15px">Resumen de tu práctica</h2>
+  <p id="resultIntro" class="muted"></p>
+  <div class="scoreline">
+    <div class="circle"><div><strong id="percent">0%</strong><span>de aciertos</span></div></div>
+    <div class="stats">
+      <div class="stat"><strong id="rightNum">0</strong><span>Respuestas correctas</span></div>
+      <div class="stat"><strong id="wrongNum">0</strong><span>Respuestas incorrectas</span></div>
+      <div class="stat"><strong id="doneNum">0</strong><span>Preguntas respondidas</span></div>
+      <div class="stat"><strong id="elapsed">0:00</strong><span>Tiempo empleado</span></div>
+    </div>
+  </div>
+  <div id="resultMessage" class="feedback show"></div>
+  <div class="actions">
+    <button class="btn primary" type="button" id="homeFromResults">Volver al menú principal</button>
+    <button class="btn soft" type="button" id="retryWrong">Practicar errores</button>
+    <button class="btn outline" type="button" id="toggleReview">Ocultar revisión</button>
+  </div>
+</section>
+
+<section id="reviewPanel" class="panel hide">
+  <h2>Revisión de respuestas</h2>
+  <p class="intro">Comprueba qué has contestado, cuál era la opción correcta y por qué.</p>
+  <div id="reviewList"></div>
+</section>
+</main>
+<footer class="wrap">Recurso de práctica educativa · Tema 5: Primeros auxilios · FOL</footer>
+
+<script>
+"use strict";
+// Cada pregunta contiene tema, enunciado, cuatro opciones, índice correcto (0=A…3=D) y explicación.
+const Q = [
+["Principios de actuación y PAS","Llegas a una zona de trabajo donde un compañero ha caído junto a una máquina que sigue en movimiento. ¿Qué decisión respeta mejor la lógica de los primeros auxilios?",["Acercarte inmediatamente para incorporarlo antes de que se enfríe.","Comprobar primero la seguridad de la escena para evitar que la víctima y quien auxilia sufran otro accidente.","Comenzar la exploración física sin interrumpir la actividad de la máquina.","Pedir a la víctima que se levante para comprobar si puede caminar."],1,"La actuación debe comenzar comprobando que no existen peligros y protegiendo a las personas antes de acercarse al accidentado."],
+["Principios de actuación y PAS","¿Cuál es el significado correcto de las tres actuaciones resumidas en el acrónimo PAS?",["Prevenir, atender y sujetar.","Preguntar, analizar y salvar.","Proteger, avisar y socorrer.","Parar, asistir y supervisar."],2,"PAS corresponde a proteger, avisar y socorrer. El orden ayuda a actuar sin exponerse ni retrasar la llamada de ayuda."],
+["Principios de actuación y PAS","Un trabajador intenta ayudar a una persona lesionada, pero el área contiene humo y cables caídos. ¿Qué conducta sería contraria al principio de protección?",["Entrar inmediatamente sin comprobar los peligros para arrastrar al lesionado.","Advertir a otras personas para que no entren en la zona peligrosa.","Solicitar ayuda indicando la existencia de peligros en el lugar.","Esperar a que el entorno sea seguro antes de acercarse, si no puede eliminar el riesgo por sí mismo."],0,"Proteger implica evitar que la emergencia produzca nuevas víctimas; no se debe entrar en una zona peligrosa sin controlar los riesgos."],
+["Principios de actuación y PAS","Tras asegurar la zona, un testigo llama al 112 y explica dónde ha ocurrido el accidente, cuántas víctimas hay y qué observa. ¿Qué principio está aplicando principalmente?",["La valoración secundaria.","El traslado por medios improvisados.","La ejecución del tratamiento definitivo.","Avisar a los servicios de emergencia aportando información útil."],3,"El paso A de PAS es avisar. La localización, el tipo de accidente y el estado aparente de las víctimas ayudan a coordinar la respuesta."],
+["Principios de actuación y PAS","Una persona está ayudando a un accidentado y, en lugar de actuar con calma, comienza a gritar y ordenar movimientos sin valorar la escena. ¿Qué principio general descuida?",["Mantener una actuación rápida, pero serena y organizada.","Evitar siempre informar a los servicios de emergencia.","Dar prioridad a la movilización del herido frente a la seguridad.","Sustituir al personal sanitario en el tratamiento definitivo."],0,"El tema recomienda actuar con rapidez manteniendo la calma y la serenidad, porque la precipitación puede agravar la emergencia."],
+["Principios de actuación y PAS","Una persona lesionada está consciente, no existe peligro inmediato y se sospecha una lesión grave. ¿Qué conducta se ajusta mejor al principio de movilización prudente?",["Hacerla caminar para comprobar el alcance de la lesión.","Evitar moverla salvo que resulte necesario por seguridad o para prestar los primeros auxilios indispensables.","Sentarla y flexionar sus extremidades para comprobar su movilidad.","Trasladarla rápidamente en brazos sin esperar ayuda especializada."],1,"Un herido grave no debe movilizarse salvo que sea necesario para prestarle auxilio o protegerlo de un nuevo peligro; moverlo puede agravar las lesiones."],
+["Principios de actuación y PAS","¿Qué comprobación forma parte de la valoración inicial de una persona accidentada según el tema?",["Su capacidad para volver al puesto de trabajo.","La documentación administrativa que lleva consigo.","El estado de consciencia y los signos vitales, además de las lesiones observables.","La posibilidad de ofrecerle alimentos antes de examinarla."],2,"El tema recomienda examinar a las personas accidentadas, comprobando signos vitales y heridas para determinar la actuación urgente."],
+["Principios de actuación y PAS","Un accidentado está inconsciente, pero un compañero propone darle agua para que recupere fuerzas. ¿Qué respuesta es adecuada según el material?",["No debe administrarse nada por vía oral a una persona inconsciente.","Debe beber pequeños sorbos si no se observan heridas externas.","Solo puede beber si permanece tendido boca arriba.","Es preferible darle una bebida azucarada antes de llamar al 112."],0,"El tema recalca que nunca se debe dar de beber a una persona inconsciente, debido al riesgo de complicaciones."],
+["Principios de actuación y PAS","Una trabajadora está consciente y asustada después de una caída. Mientras llega ayuda, ¿qué acción de apoyo resulta coherente con los principios generales?",["Dejarla sola para evitar que se altere más.","Prometerle que no tiene ninguna lesión sin haberla evaluado.","Pedirle que se levante para distraerla del dolor.","Hablarle con calma, tranquilizarla y vigilar su estado sin realizar maniobras innecesarias."],3,"Tranquilizar a la víctima y permanecer pendiente de su estado son actuaciones generales recomendadas en primeros auxilios."],
+["Principios de actuación y PAS","¿Por qué se recomienda abrigar a una persona accidentada cuando las circunstancias lo permiten?",["Porque el calor elimina la causa de todas las lesiones.","Porque las personas accidentadas pueden perder temperatura y conviene evitar que se enfríen.","Porque el abrigo sustituye la evaluación de los signos vitales.","Porque toda lesión debe calentarse directamente con una fuente intensa."],1,"El material indica que los accidentados tienden a perder temperatura; cubrirlos con una manta u objeto similar ayuda a evitarlo."],
+["Principios de actuación y PAS","Un compañero quiere colocar en una postura determinada a una persona inconsciente sin haber comprobado si podría tener una lesión vertebral. ¿Qué matiz debe considerar?",["La postura siempre es secundaria y no se necesita valorar la respiración.","Toda persona inconsciente debe incorporarse para abrir la vía aérea.","La posición lateral de seguridad se menciona en el tema cuando la persona inconsciente respira y se tiene seguridad de que no hay lesión vertebral.","La mejor actuación es sentar a la persona y darle líquido."],2,"El material vincula la PLS con una persona inconsciente que respira y con la ausencia de sospecha de lesión de columna; ante traumatismos, recomienda evitar movimientos."],
+["Principios de actuación y PAS","Un trabajador observa una herida aparatosa e intenta realizar todas las curas que conoce, sin llamar a emergencias. ¿Qué idea general está olvidando?",["La ayuda inicial tiene límites y no sustituye la atención médica especializada.","El socorrista debe asumir todas las tareas del personal sanitario.","Solo se debe avisar cuando han fracasado todos los tratamientos caseros.","La atención especializada es innecesaria si hay alguien que conozca primeros auxilios."],0,"Quien auxilia debe hacer lo indispensable y recordar que no puede sustituir al médico ni a los servicios de urgencias."],
+["Principios de actuación y PAS","¿Qué diferencia existe entre actuar con rapidez y actuar precipitadamente?",["No existe diferencia; actuar rápido requiere mover siempre al herido.","La precipitación es necesaria siempre que la víctima grite de dolor.","La rapidez implica evitar toda valoración de riesgos.","La rapidez permite priorizar actuaciones necesarias manteniendo la calma, mientras la precipitación puede crear peligros o agravar lesiones."],3,"El principio general combina rapidez con serenidad; actuar sin evaluar el entorno ni la víctima contradice esa pauta."],
+["Principios de actuación y PAS","Si una víctima presenta varias lesiones, ¿qué debe orientar la ayuda inicial mientras llega el personal especializado?",["La lesión que parezca más llamativa, sin valorar las constantes vitales.","La protección, la comprobación de signos vitales y la aplicación de los cuidados indispensables según la situación.","La preferencia personal del socorrista por una técnica concreta.","La movilización al primer lugar disponible, aunque agrave las heridas."],1,"La respuesta debe priorizar la seguridad, los signos vitales y las medidas indispensables, sin sustituir el tratamiento especializado."],
+["Principios de actuación y PAS","Dos personas presencian un accidente: una asegura el entorno y otra llama al 112. ¿Qué criterio debe guiar el inicio de la ayuda directa a la víctima?",["Esperar sin vigilar hasta que llegue la ambulancia.","Moverla inmediatamente para comprobar las lesiones.","Iniciar las actuaciones de socorro apropiadas una vez asegurada la escena y solicitada la ayuda, sin maniobras innecesarias.","Administrar medicación para evitar que aumente el dolor."],2,"PAS organiza la respuesta en proteger, avisar y socorrer, prestando ayuda adecuada sin asumir tratamientos que exceden la formación."],
+
+["Triaje","En un accidente colectivo hay más víctimas que recursos sanitarios inmediatos. ¿Cuál es la finalidad principal del triaje?",["Clasificar a las víctimas para priorizar asistencia y evacuación según gravedad y posibilidades de supervivencia.","Determinar de forma definitiva el diagnóstico clínico de cada persona.","Asignar el mismo orden de atención a todas las víctimas para evitar diferencias.","Sustituir la intervención de los equipos de emergencia por decisiones administrativas."],0,"El triaje es la evaluación y clasificación de múltiples víctimas para priorizar atención o evacuación con los medios disponibles."],
+["Triaje","¿Qué criterios de priorización recoge el tema para realizar el triaje?",["Edad, profesión y orden de llegada al lugar.","Distancia del domicilio, afiliación sanitaria y disponibilidad familiar.","Tipo de ropa, presencia de testigos y facilidad para hablar.","Gravedad, posibilidad de supervivencia con los medios disponibles y tiempo máximo que puede diferirse el tratamiento."],3,"El tema establece como criterios la gravedad, las posibilidades de supervivencia con los medios disponibles y el tiempo que puede esperar el tratamiento."],
+["Triaje","Tras un accidente, una víctima no respira y presenta una situación de extrema urgencia. ¿Qué color se utiliza en el sistema descrito en el tema?",["Verde.","Rojo.","Amarillo.","Negro."],1,"La tarjeta roja identifica a las víctimas que requieren asistencia y evacuación inmediata, como las que no respiran o presentan hemorragias graves."],
+["Triaje","Una persona presenta lesiones importantes y necesita asistencia hospitalaria, pero puede esperar a que se evacúe a otra víctima de mayor urgencia. ¿Qué categoría corresponde?",["Verde, porque no precisa tratamiento nunca.","Negro, porque tiene lesiones importantes.","Amarillo, porque precisa atención pero puede esperar para la evacuación con cuidados mínimos previos.","Rojo, siempre que una lesión requiera hospitalización."],2,"La tarjeta amarilla corresponde a heridos graves que requieren atención hospitalaria pero pueden esperar para ser evacuados."],
+["Triaje","Un trabajador tiene contusiones y quemaduras menores, está estable y no precisa asistencia inmediata. ¿Qué tarjeta debe asignarse según el esquema del tema?",["Verde.","Roja.","Amarilla.","Negra."],0,"La tarjeta verde identifica a heridos leves que no precisan asistencia hospitalaria o médica inmediata."],
+["Triaje","En el lugar de un siniestro se confirma que una persona ha fallecido y no es posible reanimarla. ¿Qué categoría aparece en el ejemplo del tema?",["Amarilla.","Verde.","Roja.","Negra, asociada a las víctimas fallecidas."],3,"El caso de aplicación del tema asigna tarjeta negra a las personas fallecidas."],
+["Triaje","¿Qué error se cometería si se utilizara la tarjeta verde para una persona con pérdida de consciencia y hemorragia intensa?",["Se habría priorizado correctamente porque toda hemorragia puede esperar.","Se habría clasificado como leve a una víctima que, según el sistema del tema, requiere atención inmediata.","No habría error, ya que el color solo depende de la edad.","Se habría confundido una lesión médica con un riesgo laboral sin relación con la gravedad."],1,"La pérdida de consciencia y la hemorragia intensa se incluyen entre los ejemplos de atención inmediata asignados a rojo."],
+["Triaje","Un accidentado consciente presenta traumatismo craneal y pérdida moderada de sangre. Según los ejemplos del tema, ¿qué categoría podría corresponder?",["Negra, por cualquier traumatismo craneal.","Verde, si puede responder preguntas.","Amarilla, porque requiere atención hospitalaria pero puede esperar la evacuación.","Roja, porque cualquier lesión obliga a evacuación inmediata."],2,"El tema menciona como ejemplos de tarjeta amarilla a personas conscientes con daño craneal y pérdida moderada de sangre."],
+["Triaje","¿Por qué una persona con una fractura grave puede no recibir necesariamente la primera evacuación antes que toda otra víctima?",["Porque el triaje considera la urgencia relativa, la posibilidad de supervivencia y el tiempo tolerable de espera, no solo la existencia de una fractura.","Porque las fracturas nunca precisan asistencia hospitalaria.","Porque solo se clasifican las personas que están conscientes.","Porque el orden de evacuación depende exclusivamente de la distancia a la salida."],0,"El triaje compara la urgencia y el beneficio esperado de la atención con los recursos y el tiempo disponibles."],
+["Triaje","Durante una catástrofe hay una víctima con lesiones leves que puede caminar y otra inconsciente que no respira. ¿Qué principio sustenta priorizar a la segunda en el sistema del tema?",["La primera víctima debe atenderse siempre porque puede comunicar sus necesidades.","La víctima que camina tiene más posibilidades de empeorar por definición.","La persona que llega primero siempre tiene prioridad.","La víctima sin respiración se incluye entre los casos de tarjeta roja y asistencia inmediata."],3,"El material asigna rojo a personas que no respiran o que presentan otras lesiones extremadamente urgentes."],
+["Triaje","¿Qué función cumple la tarjeta de triaje una vez evaluada una víctima?",["Certificar el alta médica y el tratamiento definitivo.","Comunicar de forma rápida la prioridad de actuación y evacuación asignada.","Reemplazar la evaluación clínica posterior en el hospital.","Indicar el nombre del profesional responsable del tratamiento completo."],1,"Las tarjetas permiten que los equipos identifiquen la urgencia relativa de cada víctima al coordinar la atención y la evacuación."],
+["Triaje","En un incendio hay varios heridos: dos con quemaduras leves, uno con gran extensión de quemaduras y otro fallecido. ¿Qué interpretación del código de colores es más coherente con el caso del tema?",["Todos se marcan amarillos porque el accidente tiene un único origen.","Los fallecidos se marcan en verde y los heridos leves en negro.","Las quemaduras extensas requieren rojo según el ejemplo; las leves, verde; el fallecido, negro.","La categoría depende del orden en que cada persona abandone el edificio."],2,"En el ejemplo del material, quemaduras superiores al 50 % y parada cardiorrespiratoria reciben rojo, las lesiones leves verde y los fallecidos negro."],
+["Triaje","¿Qué limitación del triaje se debe comprender en un accidente con múltiples víctimas?",["Es una clasificación inicial para priorizar, que no sustituye la valoración ni el tratamiento definitivo por los servicios sanitarios.","Es un método que determina con certeza todas las lesiones internas sin exploración.","Es una forma de descartar asistencia médica para todas las personas clasificadas en verde.","Es un procedimiento que elimina la necesidad de comunicar el número de víctimas a emergencias."],0,"El triaje ayuda a priorizar la respuesta inmediata, pero no constituye un diagnóstico definitivo ni reemplaza la evaluación clínica posterior."],
+["Triaje","Un herido con fractura abierta, pulso y respiración normales está consciente y presenta cortes superficiales. ¿Qué criterio debe guiar su prioridad dentro de la lógica del material?",["Clasificarlo como fallecido si hay hueso visible.","Asignar siempre verde a toda persona que responda a preguntas.","Asignar siempre rojo a cualquier herida abierta, sin considerar ninguna otra variable.","Valorar el conjunto de la lesión y la urgencia, distinguiendo una situación grave que precisa asistencia de las leves asociadas."],3,"El triaje se basa en la gravedad y la urgencia global; la consciencia aislada o el aspecto de una lesión no son criterios únicos."],
+["Triaje","¿Por qué la evacuación en un incidente con muchas víctimas debe realizarse siguiendo prioridades en lugar de un traslado indiscriminado?",["Porque así se evita que los servicios médicos reciban información sobre los heridos.","Porque los recursos son limitados y deben dirigirse primero a quienes necesitan asistencia más urgente según la clasificación.","Porque las víctimas leves nunca deben recibir valoración.","Porque las personas heridas deben elegir individualmente su puesto en el orden de salida."],1,"El triaje permite utilizar los medios disponibles de forma ordenada y dar prioridad a quienes necesitan atención o evacuación más urgente."],
+
+["Botiquín en la empresa","¿Qué finalidad tiene disponer de un botiquín de primeros auxilios en el centro de trabajo?",["Sustituir los servicios de emergencia para cualquier accidente grave.","Almacenar material ordinario de limpieza sin relación con las lesiones.","Disponer de elementos básicos para atender inicialmente accidentes o enfermedades repentinas.","Permitir que cualquier trabajador administre fármacos sin valoración."],2,"El botiquín contiene elementos indispensables para atender inicialmente a personas accidentadas o con una enfermedad repentina."],
+["Botiquín en la empresa","Según el contenido del tema, ¿cómo debe mantenerse el botiquín del centro de trabajo?",["En un lugar señalizado, ordenado y accesible, sin cerradura y con revisiones periódicas.","Cerrado con llave y disponible solo al final de cada jornada.","Sin etiquetas ni inventario para facilitar el acceso al material.","Abierto a la intemperie para que sea visible desde cualquier zona."],0,"El material debe estar ordenado, etiquetado y debidamente señalizado; el botiquín no debe tener cerradura y debe revisarse con regularidad."],
+["Botiquín en la empresa","¿Qué conjunto corresponde a material de curación básico del botiquín según el texto?",["Termómetro, pinzas y tijeras exclusivamente.","Analgésicos, antipiréticos y antihistamínicos exclusivamente.","Alcohol, jabón y suero fisiológico exclusivamente.","Gasas, vendas, esparadrapo y algodón."],3,"El tema enumera gasas, vendas, esparadrapo y algodón dentro del material de curación."],
+["Botiquín en la empresa","¿Qué elementos se clasifican en el tema como antisépticos para el botiquín?",["Vendas, esparadrapo y algodón.","Jabón, alcohol y suero fisiológico.","Tijeras, pinzas y termómetro.","Mantas, férulas y camillas exclusivamente."],1,"Los antisépticos recogidos en el material incluyen jabón, alcohol y suero fisiológico."],
+["Botiquín en la empresa","¿Cuál de los siguientes grupos contiene instrumentos y elementos adicionales, no material de curación?",["Gasas, vendas y algodón.","Jabón, alcohol y suero fisiológico.","Tijeras, pinzas, termómetro, guantes y pañuelos desechables.","Analgésicos, antipiréticos y antihistamínicos."],2,"El tema sitúa tijeras, pinzas, termómetro, guantes y pañuelos desechables entre el instrumental y los elementos adicionales."],
+["Botiquín en la empresa","¿Qué debe acompañar al material ordenado del botiquín para facilitar su mantenimiento y uso?",["Etiquetas y una lista de teléfonos de emergencia.","Una lista de contraseñas del personal sanitario.","Únicamente la fecha de apertura del centro de trabajo.","Un registro de diagnósticos médicos de todos los empleados."],0,"El texto indica que los elementos deben estar etiquetados y acompañados de una lista de teléfonos de emergencia."],
+["Botiquín en la empresa","Durante una revisión se comprueba que se han usado varias gasas y que quedan productos caducados. ¿Qué actuación corresponde?",["Dejarlo hasta que se produzca otro accidente.","Sustituir solo el material que tenga el envase abierto.","Retirar el botiquín para evitar que se use en ninguna emergencia.","Reponer el material utilizado y sustituir los elementos que ya no estén en condiciones adecuadas."],3,"El botiquín debe revisarse con regularidad para reponer lo utilizado y sustituir el material que lo necesite."],
+["Botiquín en la empresa","¿Por qué es importante que el botiquín esté debidamente señalizado y accesible?",["Porque la señalización permite sustituir la formación de primeros auxilios.","Porque en una emergencia reduce el tiempo para localizar los recursos disponibles.","Porque permite almacenar cualquier producto aunque no sea apropiado.","Porque evita la necesidad de activar el sistema de emergencias."],1,"La señalización y el acceso rápido facilitan localizar el material cuando hay que prestar primeros auxilios."],
+["Botiquín en la empresa","Una empresa quiere utilizar un botiquín como sustituto de la llamada a emergencias en caso de parada cardiorrespiratoria. ¿Qué conclusión es correcta?",["Es adecuado si contiene suficientes analgésicos.","Solo debe llamarse cuando se termine el contenido del botiquín.","El botiquín es un recurso de atención inicial y no sustituye a los servicios de emergencia.","Es válido si la persona que auxilia tiene experiencia en el puesto de trabajo."],2,"El botiquín ayuda a prestar una primera asistencia, pero no reemplaza la atención especializada ni la activación de emergencias."],
+["Botiquín en la empresa","El tema señala condiciones especiales para centros de trabajo de más de 50 trabajadores y para actividades peligrosas o con acceso difícil. ¿Qué conclusión debe extraerse al organizar la prevención?",["Hay que valorar los medios y recursos de primeros auxilios que corresponden al tamaño, riesgos y características de acceso del centro.","Todos los centros necesitan exactamente el mismo equipamiento, con independencia de sus riesgos.","El número de trabajadores nunca influye en la organización de primeros auxilios.","Las actividades peligrosas no necesitan medidas adicionales si existe un botiquín pequeño."],0,"El material relaciona la dotación de primeros auxilios con el número de trabajadores y con la peligrosidad o dificultad de acceso del centro."],
+
+["Valoración inicial y quemaduras","Según las fases de evaluación global indicadas en el tema, ¿qué actuación debe realizarse en primer lugar?",["Exploración secundaria completa de todas las lesiones.","Tratamiento definitivo en un centro hospitalario.","Registro de objetivos para la recuperación funcional.","Valoración primaria, evitando el peligro para la víctima y para quien auxilia."],3,"La primera fase es la valoración primaria: evitar el peligro y reconocer rápidamente a la víctima."],
+["Valoración inicial y quemaduras","Una vez realizada la valoración primaria, ¿qué debe comprobarse a continuación en la secuencia descrita?",["La situación laboral y el número de familiares presentes.","Las constantes vitales: consciencia, respiración y pulso.","La historia académica y los antecedentes administrativos.","La posibilidad de trasladar a la víctima en brazos antes de valorar su estado."],1,"La segunda fase descrita es la comprobación y mantenimiento de las constantes vitales: consciencia, respiración y pulso."],
+["Valoración inicial y quemaduras","¿Cuándo se realiza la valoración secundaria del accidentado?",["Antes de comprobar si existe peligro en la escena.","Solo cuando la víctima ha sido dada de alta.","Tras asegurar las constantes vitales, mediante una exploración completa para identificar lesiones.","Únicamente si el accidente ha producido una herida visible."],2,"La valoración secundaria se realiza después de asegurar las constantes vitales y busca identificar las posibles lesiones con una exploración completa."],
+["Valoración inicial y quemaduras","Una quemadura afecta a la epidermis, provoca enrojecimiento y no suele formar ampollas. ¿Cómo se clasifica por profundidad en el tema?",["De primer grado o eritema.","De segundo grado.","De tercer grado.","No se puede clasificar sin conocer la temperatura exacta del agente."],0,"La quemadura de primer grado afecta a la capa superficial de la piel y suele manifestarse con enrojecimiento sin ampollas."],
+["Valoración inicial y quemaduras","Una persona presenta ampollas tras contacto con aceite caliente; la lesión alcanza la epidermis y la dermis. ¿Qué clasificación se ajusta al texto?",["Primer grado, porque toda quemadura térmica es superficial.","Tercer grado, aunque no exista afectación profunda.","No es una quemadura si no se observa tejido muscular.","Segundo grado, por afectar epidermis y dermis y producir ampollas."],3,"Las quemaduras de segundo grado afectan epidermis y dermis y se caracterizan por la aparición de ampollas."],
+["Valoración inicial y quemaduras","Una lesión quemada presenta una costra oscura y ha destruido terminaciones nerviosas, por lo que no resulta dolorosa. ¿Qué interpretación es coherente con el tema?",["Es necesariamente de primer grado porque no duele.","Puede ser una quemadura de tercer grado, profunda y con destrucción de terminaciones nerviosas.","Es una quemadura de segundo grado porque todas producen ampollas y dolor intenso.","La ausencia de dolor descarta que exista daño tisular importante."],1,"El tema describe las quemaduras de tercer grado como profundas, con posible costra oscura y ausencia de dolor por destrucción de terminaciones nerviosas."],
+["Valoración inicial y quemaduras","¿Cuál de los siguientes factores interviene en la gravedad de una quemadura según el material?",["Únicamente el color de la ropa de la persona.","El tiempo que tardan los compañeros en llegar, con independencia de la lesión.","La profundidad, extensión, localización y edad de la persona afectada.","El hecho de que la víctima pueda hablar durante la primera valoración."],2,"La gravedad depende de la profundidad, la extensión, la localización y la edad del afectado."],
+["Valoración inicial y quemaduras","¿Qué criterio utiliza la regla de los nueve de Wallace para estimar la extensión corporal quemada?",["Divide las zonas corporales en proporciones del 9 % o sus múltiplos.","Asigna un porcentaje según el dolor que manifiesta la persona.","Cuenta exclusivamente las ampollas visibles en la epidermis.","Calcula la superficie en función de la temperatura ambiental."],0,"La regla de los nueve de Wallace calcula la extensión usando zonas corporales valoradas en porcentajes del 9 % o múltiplos."],
+["Valoración inicial y quemaduras","En una quemadura térmica, ¿qué actuación inicial se ajusta al procedimiento recogido en el tema?",["Aplicar hielo directamente para detener de golpe la lesión.","Extender una pomada antes de cubrir la piel.","Retirar de inmediato toda la ropa adherida a la zona quemada.","Alejar a la víctima de la fuente de calor y enfriar la zona con agua fría o compresas, sin aplicar hielo."],3,"El tema recomienda alejar a la víctima de la fuente de calor y enfriar la zona con agua fría; indica expresamente que no se debe colocar hielo."],
+["Valoración inicial y quemaduras","Una persona sufre una quemadura y alguien propone aplicar una pomada doméstica. ¿Qué recomienda el material?",["Aplicar siempre una pomada grasa antes del enfriamiento.","No aplicar pomadas y cubrir la lesión con gasas limpias tras las medidas iniciales indicadas.","Frotar la zona para retirar la piel afectada.","Exponer la lesión al polvo para que se seque antes de trasladar a la víctima."],1,"El material recomienda no aplicar pomadas y cubrir la quemadura con gasas limpias."],
+["Valoración inicial y quemaduras","¿Qué se debe hacer con anillos, pulseras o prendas apretadas que quedan sobre el área quemada, si pueden retirarse sin causar daño?",["Mantenerlos puestos en todos los casos, aunque aumente la inflamación.","Retirarlos solo después de que la hinchazón alcance su máximo.","Quitarlos con cuidado antes de que la zona comience a inflamarse.","Cortarlos siempre sobre la lesión, aunque eso empeore la herida."],2,"El tema recomienda retirar con cuidado objetos apretados y joyas sobre la zona afectada antes de que se inflame."],
+["Valoración inicial y quemaduras","¿Qué pauta del tema se aplica al manejo de la ropa en una quemadura térmica?",["No quitar la ropa, salvo la excepción indicada para quemaduras causadas por sustancias químicas.","Arrancar inmediatamente toda la ropa, incluso si está adherida a la piel.","Cubrir la ropa con una pomada para impedir la pérdida de calor.","Retirar toda la ropa y dejar la zona expuesta hasta que llegue el traslado."],0,"El material indica no quitar la ropa en quemaduras, excepto cuando estén causadas por sustancias químicas."],
+["Valoración inicial y quemaduras","Una persona presenta una quemadura extensa y pide beber agua mientras llega la ayuda. ¿Qué indica el tema sobre la administración oral en esta situación?",["Darle refrescos para evitar el estrés.","Permitir agua si la persona no tiene ampollas.","Ofrecer líquidos solo si la quemadura es de primer grado.","No administrar líquidos por vía oral como parte de las pautas recogidas en el material."],3,"Entre las pautas que el tema enumera para quemaduras está no administrar líquidos por vía oral y trasladar a la víctima a un centro asistencial."],
+["Valoración inicial y quemaduras","¿Qué combinación distingue correctamente el mecanismo de una quemadura térmica, química y eléctrica?",["Las térmicas dependen solo de productos corrosivos; las químicas, de llamas; las eléctricas, de radiación solar.","Las térmicas se deben al calor, las químicas al contacto con sustancias y las eléctricas a la electricidad.","Las tres se definen únicamente por la profundidad y no por su agente causal.","Las quemaduras eléctricas son siempre superficiales y nunca afectan a tejidos profundos."],1,"El tema clasifica las quemaduras según su agente causal en térmicas, químicas y eléctricas."],
+["Valoración inicial y quemaduras","Dos quemaduras tienen una profundidad parecida, pero una afecta a mayor superficie corporal. ¿Qué razonamiento resulta correcto según los factores de gravedad?",["La extensión no influye en la gravedad si las lesiones se parecen a simple vista.","La gravedad solo depende de que se formen ampollas.","La superficie afectada también influye en la gravedad, por lo que debe valorarse además de la profundidad.","La edad de la víctima siempre sustituye a todos los demás factores."],2,"Además de la profundidad, la extensión es uno de los factores que el material incluye para valorar la gravedad de una quemadura."],
+["Valoración inicial y quemaduras","Una quemadura de primer grado se localiza en la epidermis; otra de tercer grado alcanza capas más profundas. ¿Qué conclusión permite la clasificación por profundidad?",["La clasificación ayuda a diferenciar el alcance de la lesión y no debe deducirse solo por la causa que la produjo.","Todas las quemaduras causadas por líquidos son de primer grado.","Toda quemadura indolora corresponde a una lesión leve.","La profundidad solo puede determinarse por el tamaño de la ampolla."],0,"La clasificación por profundidad se relaciona con las capas de piel afectadas y sus manifestaciones, no exclusivamente con el agente causal."],
+["Valoración inicial y quemaduras","Tras enfriar y cubrir una quemadura, ¿qué paso aparece al final de las actuaciones enumeradas en el tema?",["Dar alimentos para recuperar energía.","Retirar las gasas cada pocos minutos para observar la herida.","Aplicar un medicamento tópico antes de salir del lugar.","Trasladar a la víctima a un centro asistencial."],3,"El procedimiento del material concluye indicando que se traslade a la víctima a un centro asistencial."],
+["Valoración inicial y quemaduras","¿Por qué debe evitarse valorar una quemadura únicamente por el dolor referido?",["Porque el dolor siempre indica una lesión de primer grado.","Porque una quemadura profunda puede destruir terminaciones nerviosas y ser poco o nada dolorosa.","Porque las quemaduras solo se clasifican por la edad.","Porque la intensidad del dolor depende exclusivamente del tamaño de la ropa afectada."],1,"El tema señala que las quemaduras de tercer grado pueden no doler debido a la destrucción de terminaciones nerviosas sensibles al dolor."],
+["Valoración inicial y quemaduras","Una persona tiene una lesión por una sustancia química adherida a la ropa. ¿Qué excepción del manejo de la ropa menciona el tema?",["Nunca se debe considerar la ropa, cualquiera que sea el agente.","Hay que retirar la ropa después de cubrirla con pomada.","En las quemaduras causadas por sustancias químicas se contempla retirar la ropa, a diferencia de la pauta general para las térmicas.","Se debe esperar a que la sustancia se seque sobre la piel antes de cualquier actuación."],2,"El tema formula como excepción al consejo de no retirar la ropa las quemaduras causadas por sustancias químicas."],
+["Valoración inicial y quemaduras","Durante la valoración inicial se detecta una quemadura y otras lesiones posibles. ¿Qué secuencia evita que la atención a la quemadura haga olvidar necesidades más urgentes?",["Asegurar la escena, valorar primero el estado general y las constantes vitales y después explorar y tratar las lesiones según prioridad.","Aplicar agua a la quemadura durante todo el tiempo disponible sin evaluar el resto de la víctima.","Dar prioridad a la lesión más visible antes de comprobar la consciencia.","Trasladar por cuenta propia sin avisar ni valorar el riesgo del entorno."],0,"El tema establece una evaluación global en fases: seguridad y valoración primaria, constantes vitales, valoración secundaria y tratamiento definitivo en el medio hospitalario."],
+
+["Hemorragias","Una persona pierde sangre porque se rompe un vaso sanguíneo tras una lesión. ¿Qué definición corresponde a una hemorragia?",["La inflamación de una articulación tras un giro brusco.","La rotura parcial de un hueso sin lesión cutánea.","La salida de sangre de los vasos sanguíneos como consecuencia de su rotura.","La pérdida transitoria de consciencia por una causa emocional."],2,"El tema define la hemorragia como la salida de sangre de los vasos sanguíneos debido a su rotura."],
+["Hemorragias","La sangre de una herida sale al exterior a través de una lesión visible. ¿Cómo se clasifica según su naturaleza?",["Interna.","Externa.","Exteriorizada.","Crónica por definición."],1,"La hemorragia externa es aquella en la que la sangre sale fuera del organismo a través de una herida u otra abertura traumática."],
+["Hemorragias","Un traumatismo provoca una pérdida de sangre que queda acumulada en el interior del organismo sin salir por una herida visible. ¿Qué tipo de hemorragia es?",["Externa.","Capilar.","Exteriorizada.","Interna."],3,"La hemorragia interna se produce cuando la sangre queda dentro del organismo y puede ser difícil de detectar."],
+["Hemorragias","Una persona presenta sangre procedente de un orificio natural del cuerpo. ¿Cómo se denomina esta clasificación por naturaleza?",["Hemorragia exteriorizada.","Hemorragia arterial obligatoriamente.","Hemorragia aguda exclusivamente.","Hemorragia capilar."],0,"La hemorragia exteriorizada es aquella en la que la sangre sale por orificios naturales del cuerpo."],
+["Hemorragias","¿Qué diferencia destaca el tema entre una hemorragia aguda y una crónica?",["La crónica siempre pierde más sangre en segundos que la aguda.","La aguda ocurre solo por vasos capilares y la crónica solo por arterias.","La aguda pierde mucha sangre en pocos minutos y puede ser muy grave; el organismo puede adaptarse a algunas pérdidas crónicas.","Ambas son necesariamente de igual gravedad porque solo importa el color de la sangre."],2,"La hemorragia aguda supone una pérdida importante en poco tiempo; la crónica puede tolerarse mejor porque el organismo se adapta progresivamente."],
+["Hemorragias","La sangre sale en poca cantidad de una lesión superficial y se observa un sangrado fino y poco abundante. ¿Qué vaso se relaciona más con esta descripción?",["Arteria de gran calibre.","Vaso capilar.","Vena de gran calibre.","No puede proceder de un vaso sanguíneo."],1,"El tema describe la hemorragia capilar como una salida de poca cuantía por el fino calibre de los vasos."],
+["Hemorragias","Una herida sangra de forma continua, sin salir a chorros, y la sangre es de color granate. ¿Qué tipo de hemorragia sugiere el patrón descrito?",["Arterial.","Interna exclusivamente.","Capilar en todos los casos.","Venosa."],3,"La hemorragia venosa se caracteriza en el material por un flujo continuo sin fuerza y sangre de color granate."],
+["Hemorragias","La sangre es de color rojo brillante y sale con fuerza coincidiendo con cada latido. ¿Qué tipo de vaso es más probable que esté lesionado?",["Una arteria.","Un capilar superficial.","Una vena sin presión.","Un orificio natural sin lesión vascular."],0,"La hemorragia arterial se describe como abundante, de color rojo brillante y acompasada con los latidos del corazón."],
+["Hemorragias","¿Qué factores influyen en la gravedad de una hemorragia según el tema?",["Solo la extensión de la herida en la piel.","El color de la ropa y la temperatura ambiente.","La velocidad de pérdida, el volumen sanguíneo perdido y las condiciones de la persona.","Únicamente la edad, con independencia de la pérdida."],2,"La gravedad depende de la velocidad de pérdida, el volumen perdido y las condiciones del paciente, incluida la edad, otras enfermedades y medicación."],
+["Hemorragias","Tras un traumatismo importante, una víctima está pálida, sudorosa, mareada y presenta pulso débil y rápido, aunque no se ve una herida sangrante. ¿Qué debe sospecharse según el tema?",["Un esguince leve sin posibilidad de complicación.","Una posible hemorragia interna que requiere atención urgente.","Una hemorragia capilar necesariamente controlada.","Una hemorragia nasal que puede resolverse inclinando la cabeza hacia atrás."],1,"Los traumatismos importantes acompañados de palidez, sudoración, mareo y pulso débil y rápido pueden indicar hemorragia interna."],
+["Hemorragias","Ante la sospecha de hemorragia interna, ¿qué combinación de actuaciones propone el material mientras se organiza la asistencia?",["Dar líquidos y medicación para compensar la pérdida.","Levantar a la víctima para comprobar si puede caminar.","Aplicar un torniquete en cualquier extremidad, aunque no haya sangrado externo.","Acostar a la víctima, elevar las extremidades inferiores según el texto, no dar líquidos ni medicamentos, cubrirla y trasladarla a un centro asistencial."],3,"El material indica colocar horizontalmente, elevar las extremidades inferiores, no administrar líquidos ni medicamentos, cubrir y trasladar al lesionado."],
+["Hemorragias","Una herida superficial presenta una hemorragia capilar. ¿Qué actuación recoge el tema?",["Limpiar con una solución antiséptica y cubrir con una gasa estéril.","Realizar siempre un torniquete por encima de la herida.","Mantener la lesión abierta y no utilizar material de cobertura.","Introducir material en profundidad hasta detener el sangrado."],0,"Para la hemorragia capilar, el tema recomienda limpiar con solución antiséptica y recubrir con gasa estéril."],
+["Hemorragias","En una hemorragia venosa externa de una extremidad, ¿qué actuación aparece indicada en el material?",["Dejar que la sangre salga para identificar si es venosa.","Retirar repetidamente el apósito para observar si sigue sangrando.","Descubrir la herida, aplicar compresión con una compresa y mantener elevado el miembro herido.","Aplicar calor local y movilizar la extremidad."],2,"El material propone descubrir la herida, comprimir con una compresa y elevar el miembro para la hemorragia venosa."],
+["Hemorragias","Una hemorragia arterial en una extremidad parece abundante y urgente. ¿Qué conducta recoge el tema?",["Esperar a que disminuya espontáneamente antes de actuar.","Actuar rápidamente, elevar la extremidad si procede y comprimir directamente la herida; el torniquete se reserva para casos extremos.","Lavar la lesión durante varios minutos sin aplicar presión.","Dar de beber al accidentado y colocarlo de pie."],1,"El tema subraya la urgencia de la hemorragia arterial, la compresión y que el torniquete es una medida extrema y de último recurso."],
+["Hemorragias","¿Qué limitación establece el material respecto al uso de un torniquete?",["Debe utilizarse como primera medida en toda hemorragia capilar.","Debe retirarse cada minuto para comprobar el sangrado.","Puede aplicarse en cualquier parte del cuerpo aunque no exista una extremidad afectada.","Se reserva para situaciones extremas como última medida y no debe retirarlo quien auxilia antes de la atención hospitalaria."],3,"El material limita el torniquete a casos extremos y señala que debe reservarse como última medida; una vez aplicado, no se debe retirar antes de la asistencia hospitalaria."],
+["Hemorragias","Una persona sufre una hemorragia nasal. ¿Qué postura recomienda el tema?",["Sentarla e inclinar la cabeza hacia delante, comprimiendo las fosas nasales.","Acostarla boca arriba e inclinar la cabeza hacia atrás.","Ponerla de pie con la cabeza extendida hacia atrás.","Colocarla boca abajo y comprimir la nuca."],0,"Para la epistaxis, el tema recomienda sentar a la persona, dirigir la cabeza hacia delante y comprimir las fosas nasales aproximadamente dos minutos."],
+["Hemorragias","¿Qué error debe evitarse al ayudar a una persona con sangrado nasal según las indicaciones del tema?",["Mantenerla sentada.","Comprimir suavemente las fosas nasales.","Inclinar la cabeza hacia atrás, porque favorece que la sangre se dirija hacia la garganta.","Solicitar atención médica si el sangrado es importante y no cesa."],2,"La pauta del tema es inclinar la cabeza hacia delante, no hacia atrás, y comprimir las fosas nasales."],
+["Hemorragias","Una hemorragia nasal importante no cesa con compresión inicial. ¿Qué paso menciona el material después de esa primera actuación?",["Permitir que la persona se suene con fuerza repetidamente.","Realizar un taponamiento según el procedimiento descrito en el texto y trasladar a la persona a un centro médico.","Tumbarla e inclinar la cabeza completamente hacia atrás.","Aplicar un torniquete alrededor del cuello."],1,"El texto indica que, si la hemorragia es importante y no cesa con compresión, puede realizarse un taponamiento y trasladar al afectado a un centro médico."],
+["Hemorragias","Tras un golpe en la cabeza, una persona presenta sangrado por el oído. ¿Qué actuación concreta señala el tema para este tipo de hemorragia?",["Taponar con fuerza el conducto auditivo para detener el sangrado.","Introducir una gasa profundamente y comprimir de manera continua.","Lavar el oído a presión para retirar la sangre acumulada.","No intentar detener el sangrado ni taponar el oído, colocar a la persona del lado afectado y trasladarla rápidamente al hospital."],3,"El material advierte que la otorragia puede estar relacionada con lesiones graves; indica no impedir la salida de sangre y trasladar pronto al hospital."],
+["Hemorragias","Una persona tiene hemorragia por el oído tras un traumatismo craneal y otra presenta una hemorragia venosa en el antebrazo. ¿Por qué no debe utilizarse la misma maniobra en ambas?",["Porque cualquier hemorragia tiene idéntico origen y debe taponarse.","Porque el color de la sangre determina que haya que aplicar siempre un torniquete.","Porque el origen y el riesgo son distintos: taponar la otorragia puede ser perjudicial, mientras que una hemorragia venosa externa requiere compresión directa según el tema.","Porque las hemorragias del oído no requieren traslado."],2,"El tema distingue la otorragia, que no debe taponarse, de la hemorragia venosa externa, que se aborda mediante compresión y elevación del miembro."],
+
+["Traumatismos","Tras un impacto fuerte, una persona presenta lesión corporal. ¿Qué definición de traumatismo corresponde al tema?",["Una infección que aparece sin lesión previa.","Una lesión del cuerpo causada por un impacto violento.","Una alteración emocional que no puede afectar al cuerpo.","Una enfermedad crónica que siempre evoluciona lentamente."],1,"El tema define el traumatismo como una lesión sobre el cuerpo causada por un impacto violento."],
+["Traumatismos","En una lesión, el hueso roto ha desgarrado la piel y sobresale por la herida. ¿Cómo se clasifica?",["Fractura cerrada.","Luxación simple.","Esguince ligamentoso.","Fractura abierta."],3,"En una fractura abierta el hueso roto produce una herida en la piel y puede salir al exterior; en la cerrada la piel no se desgarra."],
+["Traumatismos","Un paciente presenta una fractura, pero la piel permanece intacta sobre la zona lesionada. ¿Qué clasificación corresponde?",["Fractura cerrada.","Fractura abierta.","Hemorragia exteriorizada.","Luxación abierta obligatoriamente."],0,"La fractura cerrada es aquella en la que el hueso roto no desgarra la piel."],
+["Traumatismos","¿Qué conjunto de signos es compatible con una fractura según el material?",["Enrojecimiento sin dolor y movilidad normal en todos los casos.","Solo picor cutáneo y ausencia de inflamación.","Dolor, impotencia funcional, deformación, inflamación y posible sangrado.","Únicamente pérdida de audición y sangrado nasal."],2,"Entre los síntomas de fractura se enumeran dolor, impotencia funcional, deformación, inflamación y posible sangrado."],
+["Traumatismos","Ante la sospecha de fractura de un hueso de una extremidad, ¿qué actuación se debe priorizar según el texto?",["Intentar alinear la extremidad mediante movimientos repetidos.","Evitar movimientos e inmovilizar incluyendo la articulación superior e inferior al punto de fractura.","Pedir a la persona que pruebe a caminar para valorar la estabilidad.","Masajear con fuerza el área para reducir la inflamación."],1,"El material recomienda evitar el movimiento e inmovilizar las articulaciones por encima y por debajo de la fractura."],
+["Traumatismos","¿Por qué se deben inmovilizar las articulaciones por encima y por debajo del punto de fractura?",["Para hacer que el hueso vuelva a colocarse por sí mismo.","Para comprobar si la lesión es dolorosa al moverla.","Para acelerar el traslado mediante movimientos más amplios.","Para limitar el movimiento del segmento lesionado y reducir el riesgo de agravar el daño."],3,"Inmovilizar las articulaciones superior e inferior ayuda a evitar movimientos en el área fracturada."],
+["Traumatismos","En una caída se sospecha fractura vertebral. ¿Qué precaución concreta destaca el tema?",["Mantener la alineación y tratar cabeza, tronco y extremidades como un bloque rígido.","Sentar a la persona para comprobar su equilibrio.","Girar por separado cabeza y tronco para aliviar el dolor.","Trasladarla por los brazos antes de pedir ayuda."],0,"Ante posible lesión de columna, el tema recomienda extremar los cuidados y conservar alineados cabeza, tronco y extremidades como un bloque rígido."],
+["Traumatismos","Una fractura es abierta y existe sangrado. ¿Qué prioridad adicional indica el material, además de evitar movimiento e inmovilizar?",["Colocar el hueso de nuevo en el interior de la herida.","Retirar todos los tejidos visibles de la herida.","Tratar la hemorragia sin intentar recolocar el hueso.","Hacer que la persona mueva la articulación para recuperar la función."],2,"En fracturas abiertas, el tema indica tratar la hemorragia; no recomienda recolocar por la fuerza el hueso expuesto."],
+["Traumatismos","Una persona se tuerce el tobillo y presenta dolor, deformidad e incapacidad funcional sin evidencias de rotura ósea. ¿Qué lesión se relaciona con el estiramiento o desgarro de ligamentos?",["Una fractura abierta.","Un esguince.","Una hemorragia arterial.","Una quemadura de segundo grado."],1,"El esguince consiste en la distensión o desgarro de los ligamentos que unen las articulaciones."],
+["Traumatismos","¿Qué dos medidas de primeros auxilios aparecen asociadas al esguince en el tema?",["Masaje intenso y calor directo.","Intentar recolocar los huesos y probar la movilidad.","Dar líquidos y trasladar de pie.","Inmovilizar, evitar movimientos y aplicar frío."],3,"El cuadro del tema propone inmovilizar, evitar movimientos y aplicar frío en el esguince."],
+["Traumatismos","Tras un traumatismo, los huesos que forman una articulación han perdido su posición normal. ¿Qué lesión define esta situación?",["Luxación.","Esguince.","Fractura cerrada necesariamente.","Hemorragia capilar."],0,"La luxación es el desplazamiento de los huesos que forman una articulación y puede acompañarse de lesiones ligamentosas o musculares."],
+["Traumatismos","¿Qué conjunto de signos puede aparecer en una luxación según el cuadro del tema?",["Solo enrojecimiento superficial sin dolor.","Dolor limitado a la piel y ausencia de alteración funcional.","Dolor intenso, impotencia funcional, deformidad e inflamación articular.","Pérdida inmediata de consciencia en todos los casos."],2,"El tema relaciona la luxación con dolor intenso, impotencia funcional, deformidad e inflamación."],
+["Traumatismos","Se sospecha una luxación de hombro y el accidentado no puede mover el brazo. ¿Qué actuación se ajusta al material?",["Tirar de la extremidad hasta que se oiga un chasquido.","Evitar el movimiento, inmovilizar la articulación y aplicar frío local.","Pedir al paciente que repita movimientos amplios para reducir la deformidad.","Masajear con fuerza hasta eliminar el dolor."],1,"Para la luxación, el texto propone evitar movimientos, inmovilizar la articulación y aplicar frío local."],
+["Traumatismos","¿Qué diferencia conceptual permite distinguir un esguince de una luxación?",["El esguince es siempre una fractura abierta, y la luxación una quemadura profunda.","La luxación solo afecta a los músculos y el esguince solo a los huesos.","Ambos términos describen exactamente la misma lesión sin diferencias.","El esguince afecta a los ligamentos que unen la articulación; la luxación implica el desplazamiento de los huesos que la forman."],3,"El material define esguince como distensión o desgarro de ligamentos y luxación como desplazamiento de los huesos de una articulación."],
+["Traumatismos","Una víctima tiene una deformidad evidente después de una caída. ¿Por qué no es adecuado intentar corregirla antes de la asistencia especializada?",["Porque la manipulación puede aumentar el daño y el dolor; es preferible evitar el movimiento e inmovilizar según proceda.","Porque las deformidades siempre se corrigen sin intervención.","Porque la inmovilización solo se utiliza para lesiones de piel.","Porque el dolor impide siempre determinar si existe una lesión."],0,"Ante fracturas y luxaciones se recomienda evitar movimientos e inmovilizar, no intentar corregir la posición de los huesos por cuenta propia."],
+["Traumatismos","En una posible lesión vertebral, ¿qué actuación sería más arriesgada según los principios del tema?",["Solicitar ayuda urgente.","Evitar movilizar a la persona sin necesidad.","Girar por separado el cuello y el tronco para incorporarla rápidamente.","Mantener la alineación de las partes corporales."],2,"Si se sospecha lesión de columna, se conserva la alineación como un bloque rígido y se evitan maniobras que produzcan movimiento."],
+["Traumatismos","Una persona presenta dolor intenso y pérdida de función tras torcer una articulación. Sin diagnóstico definitivo, ¿qué decisión inicial es más prudente?",["Forzar el movimiento para decidir si es fractura o esguince.","Evitar movimientos, inmovilizar la zona afectada y solicitar valoración adecuada.","Volver de inmediato a la actividad laboral para prevenir rigidez.","Aplicar presión directa sobre todos los tejidos hasta que desaparezca el dolor."],1,"Ante una posible lesión articular, el tema recoge la inmovilización y la limitación del movimiento para evitar agravar la lesión."],
+["Traumatismos","¿Qué relación existe entre fractura abierta y hemorragia?",["La fractura abierta no puede sangrar porque el hueso bloquea los vasos.","La presencia de sangre demuestra siempre una luxación y no una fractura.","La hemorragia solo puede aparecer en fracturas cerradas.","Una fractura abierta puede causar sangrado, que debe abordarse sin intentar recolocar el hueso expuesto."],3,"El tema incluye el posible sangrado entre los síntomas y señala tratar la hemorragia si la fractura es abierta."],
+["Traumatismos","Dos víctimas presentan lesión en una extremidad: una tiene esguince y otra una fractura sospechada. ¿Qué pauta común se desprende del tema?",["Evitar movimientos, proteger la zona e inmovilizar cuando corresponde, evitando maniobras de recolocación.","Aplicar calor intenso y movilizar para confirmar la lesión.","Tratar ambas lesiones como si fueran hemorragias internas.","Permitir apoyo y movimiento completo para evaluar el funcionamiento."],0,"En esguinces y fracturas se insiste en evitar movimientos; en las fracturas se inmovilizan además las articulaciones superior e inferior al foco."],
+["Traumatismos","Una víctima de un accidente tiene una fractura cerrada, dolor e inflamación, pero no existe herida en la piel. ¿Cuál es el error de razonamiento que debe evitarse?",["Reconocer que puede existir fractura aunque la piel esté intacta.","Evitar mover la extremidad mientras se organiza la asistencia.","Concluir que no existe fractura solo porque no hay una herida externa.","Considerar el dolor y la inflamación entre los signos compatibles con fractura."],2,"Una fractura cerrada no desgarra la piel; la ausencia de una herida externa no descarta la rotura ósea."],
+
+["Inconsciencia, respiración y RCP","Según el esquema del tema, ¿qué signo debe explorarse primero ante una persona accidentada?",["La temperatura corporal.","La consciencia.","La capacidad para caminar.","El color de la ropa."],1,"El material destaca que la consciencia es siempre el primer signo vital que se debe explorar."],
+["Inconsciencia, respiración y RCP","Un accidentado no responde cuando se le pregunta qué ha ocurrido. ¿Qué actuación aparece descrita en el tema para comprobar si está inconsciente?",["Darle agua y esperar a que hable.","Incorporarlo y pedirle que camine.","Sacudirlo con fuerza por los hombros hasta que se levante.","Estimularlo suavemente y observar si reacciona; si no responde, comprobar su respiración."],3,"El texto indica preguntar primero y, si no contesta, agitar levemente para observar la reacción; si no hay respuesta, se comprueba la respiración."],
+["Inconsciencia, respiración y RCP","Una persona está inconsciente, respira y no hay sospecha de lesión vertebral. ¿Qué posición se contempla en el tema?",["Posición lateral de seguridad.","Posición de pie con apoyo.","Posición sentada con el cuello flexionado.","Decúbito prono con la cabeza presionada contra el suelo."],0,"El tema recomienda la posición lateral de seguridad para el accidentado inconsciente que respira, cuando no hay sospecha de lesión de columna."],
+["Inconsciencia, respiración y RCP","Una víctima inconsciente respira, pero se sospecha un traumatismo importante de columna. ¿Qué precaución recoge el material?",["Colocarla siempre en PLS sin valorar la lesión.","Moverla varias veces para comprobar si recupera consciencia.","No moverla en esa situación y vigilar sus signos vitales mientras llega la ayuda.","Sentarla para que la respiración se haga más profunda."],2,"El material distingue al inconsciente que respira con traumatismo: en ese caso indica no moverlo y permanecer vigilando hasta que llegue ayuda."],
+["Inconsciencia, respiración y RCP","Una persona está inconsciente y no respira. ¿Qué secuencia inicial se describe en el documento antes de las maniobras respiratorias?",["Colocarla sentada y darle agua.","Colocarla boca arriba, abrir la vía aérea mediante la maniobra frente-mentón y comprobar que no existan cuerpos extraños visibles.","Ponerla en PLS y esperar sin reevaluar.","Realizar un traslado en silla sin comprobar signos vitales."],1,"El tema plantea el decúbito supino, la apertura de la vía aérea mediante frente-mentón y la comprobación de cuerpos extraños visibles."],
+["Inconsciencia, respiración y RCP","¿Qué finalidad atribuye el texto a la maniobra frente-mentón en la persona inconsciente?",["Inmovilizar las articulaciones de las extremidades.","Detener una hemorragia nasal.","Comprobar la deformidad causada por una fractura.","Desplazar la mandíbula y abrir la vía aérea para evitar que la lengua la obstruya."],3,"La maniobra frente-mentón se describe para abrir la vía aérea y evitar que la lengua obstruya la entrada de aire."],
+["Inconsciencia, respiración y RCP","Tras abrir la vía aérea, se observa un objeto visible en la boca de la víctima. ¿Qué idea general debe guiar la comprobación descrita en el tema?",["Comprobar la presencia de cuerpos extraños que puedan obstruir el paso del aire.","Introducir los dedos profundamente a ciegas en cualquier circunstancia.","Dar líquidos para que el objeto se desplace.","Cerrar la boca y continuar sin examinar la vía aérea."],0,"El texto indica comprobar que no haya cuerpos extraños, como chicles, que obstruyan la entrada de aire."],
+["Inconsciencia, respiración y RCP","En el procedimiento que describe el material, ¿qué se comprueba después de las maniobras iniciales de respiración artificial?",["La posibilidad de que la víctima se incorpore sola.","La temperatura de la habitación.","La existencia de pulso, para decidir el siguiente paso del procedimiento descrito.","La extensión de las quemaduras aunque no exista ninguna."],2,"El tema indica comprobar el pulso carotídeo después de las maniobras respiratorias para orientar la actuación descrita."],
+["Inconsciencia, respiración y RCP","Según la secuencia del tema, una persona inconsciente no respira pero sí presenta pulso. ¿Qué actuación describe el material?",["Aplicar un torniquete en una extremidad.","Continuar con la respiración artificial y vigilar la evolución según el procedimiento explicado.","Abandonar a la víctima porque no necesita ayuda.","Dar líquidos por vía oral hasta que recupere la consciencia."],1,"El tema plantea que, si hay pulso, se continúa con la respiración artificial y se vigila la situación."],
+["Inconsciencia, respiración y RCP","En la descripción del material, ¿qué combinación lleva a considerar una parada cardiorrespiratoria y a realizar RCP?",["La persona está consciente y puede hablar.","Hay respiración normal aunque la persona esté dormida.","La persona presenta una quemadura superficial sin alteración de signos vitales.","La víctima está inconsciente, no respira y no se detecta pulso según el esquema expuesto."],3,"El esquema del tema vincula la ausencia de respiración y pulso en el accidentado inconsciente con la necesidad de RCP."],
+["Inconsciencia, respiración y RCP","¿Sobre qué tipo de superficie indica el tema que se coloque al paciente para realizar el masaje cardiaco?",["Sobre una superficie dura.","Sobre un colchón blando que permita hundirse con facilidad.","De pie, apoyado contra una pared.","Sentado en una silla inclinada."],0,"El material indica colocar al paciente sobre una superficie dura para realizar compresiones torácicas."],
+["Inconsciencia, respiración y RCP","¿En qué zona del tórax sitúa el material las manos para realizar el masaje cardiaco?",["Sobre las costillas inferiores laterales.","En la zona abdominal por debajo del ombligo.","Sobre el tercio inferior del esternón, colocando una mano y apoyando la otra encima.","En el centro de la espalda entre las escápulas."],2,"El texto describe localizar el tercio inferior del esternón, colocar el talón de una mano y apoyar la otra de la misma forma encima."],
+["Inconsciencia, respiración y RCP","¿Qué alineación corporal recomienda el procedimiento de masaje cardiaco descrito en el material?",["Codos flexionados y manos desplazándose por las costillas.","Dedos estirados y brazos perpendiculares al punto de contacto con el esternón.","Brazos cruzados sobre el abdomen y presión hacia un lado.","Compresiones laterales con la persona sentada."],1,"El texto indica mantener los dedos estirados y los brazos perpendiculares al punto de contacto con el esternón."],
+["Inconsciencia, respiración y RCP","¿Qué profundidad de compresión torácica aparece en el procedimiento histórico descrito por el tema?",["Aproximadamente 1 cm.","Entre 8 y 10 cm.","No se debe deprimir el tórax.","Aproximadamente de 4 a 5 cm."],3,"El material impreso indica una depresión del tórax de unos 4 a 5 cm; la formación práctica debe seguir las recomendaciones vigentes."],
+["Inconsciencia, respiración y RCP","¿Qué relación de compresiones e insuflaciones aparece en la pauta del tema para RCP?",["30 compresiones torácicas seguidas de 2 insuflaciones.","5 compresiones seguidas de 1 insuflación.","15 compresiones seguidas de 10 insuflaciones.","2 compresiones seguidas de 30 insuflaciones."],0,"El material indica una relación de 30 compresiones torácicas por 2 insuflaciones, denominada 30:2."],
+["Inconsciencia, respiración y RCP","¿Qué ritmo de masaje cardiaco señala el texto como parte del procedimiento que presenta?",["20 compresiones por minuto.","50 compresiones por minuto.","100 compresiones por minuto.","10 compresiones por minuto."],2,"El material indica un ritmo de 100 compresiones por minuto; para una actuación real deben seguirse las instrucciones actuales del 112 y la formación vigente."],
+["Inconsciencia, respiración y RCP","Una persona inconsciente presenta respiración pero tiene lesiones traumáticas. ¿Qué error describe el material como especialmente importante evitar?",["Permanecer a su lado hasta la llegada de ayuda.","Avisar a los servicios de emergencia.","Comprobar si existen signos de respiración.","Moverla para colocarla en PLS sin considerar el traumatismo y la posible lesión vertebral."],3,"El tema dice que, si respira pero tiene algún traumatismo, no hay que mover al paciente."],
+["Inconsciencia, respiración y RCP","Una persona se atraganta y no puede expulsar un cuerpo extraño. ¿Qué maniobra de desobstrucción describe el recuadro del libro para un adulto consciente?",["Presionar repetidamente sobre el cuello desde delante.","Rodear a la víctima por detrás y ejercer compresiones abdominales hacia dentro y arriba, según la maniobra descrita.","Colocar a la persona tumbada boca abajo y presionar la espalda con una rodilla.","Ofrecer agua para que el alimento continúe hacia el estómago."],1,"El recuadro describe colocarse detrás, rodear a la víctima y efectuar presiones hacia dentro y arriba con el puño colocado entre el ombligo y el esternón."],
+["Inconsciencia, respiración y RCP","En el procedimiento de desobstrucción descrito en el libro, ¿dónde se coloca el puño antes de ejercer las presiones?",["Sobre el centro del cuello.","En la parte inferior de la espalda.","Sobre el esternón, justo encima de las clavículas.","Entre el ombligo y el esternón, sujetándolo con la otra mano."],3,"El texto sitúa el puño entre el ombligo y el esternón y lo sujeta con la otra mano para ejercer la presión hacia dentro y arriba."],
+["Inconsciencia, respiración y RCP","¿Qué paso previo a la desobstrucción abdominal presenta el recuadro de primeros auxilios para el atragantamiento?",["Situarse detrás de la víctima y rodearla con los brazos.","Acostar a la víctima e iniciar el masaje cardiaco sin valorar el estado.","Pedirle que beba agua mientras se coloca el puño.","Sujetar las piernas de la víctima para inmovilizar las rodillas."],0,"El recuadro indica colocarse detrás de la víctima, rodearla con los brazos y después situar el puño para realizar la maniobra."],
+["Inconsciencia, respiración y RCP","Una persona no responde a preguntas y no muestra reacción a una estimulación leve. ¿Por qué conviene no demorar la comprobación de la respiración?",["Porque el material considera la respiración menos importante que la ropa de la persona.","Porque la respuesta permite continuar la evaluación y decidir la actuación urgente que corresponde.","Porque si no responde, siempre se puede asumir que tiene pulso y respira.","Porque la inconsciencia puede resolverse únicamente con traslado en brazos."],1,"Una vez identificada la falta de respuesta, el tema indica comprobar la respiración para decidir los pasos posteriores."],
+["Inconsciencia, respiración y RCP","¿Cuál de estas actuaciones resulta coherente con la idea de suplir funciones vitales alteradas descrita en el tema?",["Mantener a la víctima sola mientras se buscan objetos personales.","Dar líquidos a una persona que no responde.","Ignorar la respiración mientras se examinan lesiones menores.","Activar ayuda y aplicar las maniobras de primeros auxilios adecuadas a la consciencia y respiración observadas."],3,"El texto explica que, cuando las funciones vitales están comprometidas, se presta ayuda inicial y se solicita asistencia especializada."],
+["Inconsciencia, respiración y RCP","En la pauta del material, ¿qué diferencia marca la presencia o ausencia de pulso cuando una víctima no respira?",["Con pulso, el texto indica continuar con respiración artificial; sin pulso, plantea la RCP.","Con pulso, siempre se realiza un torniquete; sin pulso, se pone en PLS.","El pulso solo cambia el color de la tarjeta de triaje.","El pulso no tiene ningún papel en la secuencia que explica el libro."],0,"El tema indica continuar la respiración artificial si hay pulso y realizar RCP si no lo hay, según su protocolo didáctico."],
+["Inconsciencia, respiración y RCP","¿Qué secuencia evita confundir evaluación, actuación y vigilancia en la atención descrita a una víctima inconsciente?",["Trasladar, dar de beber, preguntar y abandonar.","Aplicar una maniobra de inmovilización sin comprobar la consciencia.","Valorar la consciencia, comprobar respiración, activar emergencias y aplicar las actuaciones pertinentes, vigilando hasta que llegue ayuda.","Realizar exploración secundaria completa antes de valorar respiración."],2,"La secuencia del tema da prioridad a consciencia y respiración, las maniobras iniciales adecuadas y la vigilancia mientras llega asistencia."],
+["Inconsciencia, respiración y RCP","En el esquema de actuación del tema, una persona inconsciente comienza a respirar después de la valoración inicial. ¿Qué criterio debe seguir guiando la atención mientras llega la ayuda?",["Vigilar su estado y protegerla; la colocación debe tener en cuenta si existe sospecha de traumatismo.","Dar por terminada la emergencia y dejarla sola para descansar.","Ofrecerle bebida para comprobar si recupera la deglución.","Levantarla para confirmar si puede caminar sin ayuda."],0,"El material indica permanecer junto a la víctima y vigilar sus signos vitales; la posición debe adaptarse a la respiración y a la posible existencia de lesiones traumáticas."],
+
+["Traslado de accidentados","¿Cuál es el principio general que debe regir el traslado de una víctima?",["Realizarlo lo más rápido posible sin importar la lesión.","Elegir el método más cómodo para el socorrista aunque implique flexión corporal.","Mover siempre al herido antes de pedir ayuda.","Trasladarla con el máximo cuidado para no agravar lesiones existentes ni causar nuevas."],3,"El tema insiste en que el traslado debe efectuarse con el máximo cuidado para evitar agravar lesiones u ocasionar otras nuevas."],
+["Traslado de accidentados","¿Qué factores se consideran para seleccionar un método de traslado en el material?",["Las lesiones de la víctima, el número de socorristas y los medios materiales disponibles.","Solo el peso de la víctima.","Únicamente la distancia hasta la salida.","El orden en que llegaron las personas que ofrecen ayuda."],0,"El tema indica que el método de traslado depende del tipo de lesión, de cuántos socorristas hay y de los medios disponibles."],
+["Traslado de accidentados","Hay un solo socorrista y una víctima consciente en una zona sin peligro, pero se sospecha una lesión vertebral. ¿Qué recomienda el material?",["Arrastrarla por las piernas hasta la ambulancia.","Sentarla y hacer que se desplace caminando despacio.","No moverla, tranquilizarla y solicitar ayuda urgente.","Levantarla en brazos y flexionar el cuello para facilitar el traslado."],2,"En esas circunstancias, el tema indica que no se debe mover al accidentado, sino tranquilizarlo y solicitar ayuda urgente."],
+["Traslado de accidentados","¿En qué consiste la técnica del puente descrita para varios socorristas con una camilla?",["Una persona lleva al accidentado sobre la espalda mientras los demás abren paso.","Tres socorristas lo levantan de forma coordinada sujetando cabeza, caderas y piernas como un bloque mientras otro desliza la camilla debajo.","Dos socorristas lo sientan sobre sus manos entrelazadas y caminan lateralmente.","Un solo socorrista lo arrastra sujetándolo por los tobillos."],1,"La técnica del puente requiere coordinación para elevar al accidentado como un bloque mientras otro socorrista coloca la camilla debajo."],
+["Traslado de accidentados","En la técnica del puente, ¿por qué se sujetan de forma coordinada cabeza, caderas y piernas?",["Para permitir que cada parte del cuerpo se mueva independientemente.","Para que la cabeza quede más baja que el tronco.","Para facilitar que el herido se siente durante la maniobra.","Para mantener el cuerpo alineado y reducir movimientos que puedan agravar las lesiones."],3,"El tema describe el levantamiento como si el cuerpo fuese un bloque rígido, con especial precaución ante posibles lesiones de columna."],
+["Traslado de accidentados","Se han descartado lesiones vertebrales, la víctima está inconsciente y solo hay un socorrista. ¿Qué método de traslado contempla el texto?",["Arrastrarla colocándose detrás de la cabeza y pasando los brazos bajo sus axilas.","Sentarla sobre las manos entrelazadas de dos socorristas.","Utilizar la técnica del puente con cuatro personas, aunque solo haya una.","Pedir a la víctima que se agarre al cuello del socorrista."],0,"El texto describe que, descartada la lesión de columna y con un socorrista, la víctima inconsciente puede arrastrarse sujetándola por debajo de las axilas desde detrás de la cabeza."],
+["Traslado de accidentados","La víctima está consciente, no se sospecha lesión vertebral y hay dos socorristas. ¿Qué técnica de traslado se menciona?",["El puente con una camilla y tres elevadores.","La inmovilización de todo el cuerpo sin moverlo nunca.","La silla de la reina, entrelazando las manos para que la persona se siente sobre ellas.","El arrastre desde detrás de la cabeza en cualquier circunstancia."],2,"La silla de la reina se describe para una víctima consciente, sin sospecha de lesión vertebral y con dos socorristas."],
+["Traslado de accidentados","¿Qué condición limita el uso de un arrastre o una silla de la reina en el esquema del tema?",["Que la víctima lleve ropa de trabajo.","La sospecha de lesión vertebral, que obliga a extremar precauciones y evitar movilizaciones innecesarias.","Que la víctima esté consciente y pueda responder.","Que existan otras personas en el lugar del accidente."],1,"El método debe seleccionarse según lesiones y situación; si se sospecha lesión vertebral se evita mover a la víctima y se solicita ayuda."],
+["Traslado de accidentados","¿Cuál de estos recursos improvisados se menciona en el material como posible medio de traslado?",["Una escalera móvil usada como asiento sin sujeción.","Un carro con ruedas sin ningún control de estabilidad.","Un cinturón apretado alrededor del cuello para levantar a la persona.","Palos y una lona o manta, o una chaqueta preparada con palos a través de las mangas."],3,"El tema ilustra medios improvisados como palos y una lona o manta, o una chaqueta con palos introducidos por las mangas."],
+["Traslado de accidentados","¿Por qué la disponibilidad de camilla y varios socorristas modifica la elección del método de traslado?",["Porque permite utilizar técnicas coordinadas que sostienen el cuerpo y limitan movimientos, en vez de recurrir necesariamente al arrastre.","Porque con una camilla ya no importa la sospecha de lesión vertebral.","Porque la presencia de varias personas permite flexionar al máximo las articulaciones.","Porque toda víctima debe ser trasladada en camilla incluso cuando el traslado la pone en peligro."],0,"El tema ajusta los métodos a los medios y al número de socorristas; una camilla y varios ayudantes permiten maniobras coordinadas y cuidadosas."],
+["Traslado de accidentados","Un socorrista encuentra una víctima en un lugar seguro con posible lesión de columna. No hay peligro de incendio ni otro riesgo inmediato. ¿Qué decisión refleja mejor el principio de minimizar el daño?",["Moverla a una silla para esperar con más comodidad.","Arrastrarla aunque se encuentre segura.","Evitar moverla, tranquilizarla y esperar ayuda especializada.","Pedirle que se ponga de pie para detectar la lesión."],2,"Si no existe peligro que obligue a mover al herido y se sospecha lesión de columna, el texto indica no moverlo y solicitar ayuda urgente."],
+["Traslado de accidentados","¿Qué criterio justifica mover a una víctima antes de la llegada de servicios sanitarios en ciertos casos?",["El deseo de liberar espacio sin valorar ningún riesgo.","La necesidad de apartarla de un peligro activo o de prestar los primeros auxilios indispensables, con el menor movimiento posible.","La conveniencia de comprobar si puede caminar.","La obligación de trasladar a todas las víctimas a la vez."],1,"La movilización de un herido grave se limita a cuando es necesaria para prestarle los primeros auxilios o protegerlo de un nuevo accidente."],
+["Traslado de accidentados","En la silla de la reina, ¿cómo se organiza el soporte de la víctima según el material?",["Se coloca de pie sobre las manos de los socorristas.","Se suspende de los brazos de dos personas sin apoyo inferior.","Se arrastra sobre una manta por el suelo.","La víctima se sienta sobre las manos entrelazadas de los dos socorristas."],3,"La técnica consiste en que los socorristas entrelazan las manos y el herido se sienta sobre ellas."],
+["Traslado de accidentados","Una víctima tiene una lesión que podría agravarse al flexionar el cuello. ¿Qué objetivo debe guiar la manipulación por parte del equipo?",["Mantener la alineación y evitar movimientos innecesarios hasta recibir ayuda apropiada.","Flexionar el cuello para aumentar el campo de visión de la víctima.","Probar la amplitud de movimiento antes de inmovilizar.","Sentarla de inmediato aunque no tolere el movimiento."],0,"El tema destaca mantener alineación corporal ante sospecha de lesión vertebral y evitar maniobras que puedan agravar las lesiones."],
+["Traslado de accidentados","¿Por qué es inadecuado escoger una técnica de traslado solo porque el socorrista ya la conoce?",["Porque el conocimiento de una técnica impide utilizar cualquier otra.","Porque el método no depende nunca de los materiales disponibles.","Porque la elección debe considerar lesión, nivel de consciencia, seguridad del lugar, número de ayudantes y recursos disponibles.","Porque el traslado se decide exclusivamente según el peso del herido."],2,"El texto determina la elección del traslado en función de las lesiones, número de socorristas y medios disponibles; la técnica debe ser adecuada al caso."],
+
+["Casos integrados","Tras un accidente de máquina, un testigo corre hacia el herido mientras la máquina sigue funcionando y hay otros trabajadores dentro del área de peligro. ¿Qué orden de actuación es el más adecuado?",["Socorrer inmediatamente, comprobar lesiones y después valorar si la máquina supone un peligro.","Asegurar la escena y proteger, avisar a emergencias y después prestar el socorro apropiado.","Trasladar a todos los trabajadores sin comprobar el estado del entorno.","Realizar el triaje completo antes de avisar a los servicios de emergencia."],1,"El caso combina PAS y seguridad de la escena: primero proteger, después avisar y luego socorrer sin crear nuevas víctimas."],
+["Casos integrados","Tras una explosión hay varias víctimas. Una no responde ni respira; otra tiene una quemadura leve y camina; una tercera presenta lesión grave pero está consciente y estable. ¿Qué priorización coincide mejor con el material?",["Atender primero a quien camina porque puede comunicar mejor.","Evacuar primero a la víctima con lesión leve para liberar el espacio.","Tratar a todos en el orden en que fueron encontrados.","Clasificar como roja a la víctima que no respira, verde a la lesión leve y valorar la tercera como grave que puede corresponder a amarilla según su estado."],3,"El material asigna rojo a casos que requieren atención inmediata, verde a lesiones leves y amarillo a personas graves que pueden esperar la evacuación."],
+["Casos integrados","Una trabajadora sufre una caída, está pálida y sudorosa, refiere mareo y tiene un pulso débil y rápido; no se ve sangre. ¿Qué hipótesis y respuesta inicial encajan mejor con el tema?",["Sospechar hemorragia interna, colocarla horizontal, no dar líquidos ni medicamentos, cubrirla y solicitar traslado urgente.","Concluir que es una hemorragia capilar y limpiar la piel con antiséptico.","Ponerla de pie y pedirle que camine para mejorar la circulación.","Aplicar un torniquete de forma preventiva sin localizar sangrado externo."],0,"El material vincula esos signos tras un traumatismo con posible hemorragia interna y propone reposo horizontal, no dar líquidos o medicamentos, abrigo y traslado."],
+["Casos integrados","Un trabajador se quema con aceite caliente; aparecen ampollas y la lesión afecta a epidermis y dermis. Un compañero propone hielo y pomada. ¿Qué respuesta aplica mejor el material?",["Aplicar hielo envuelto y pomada para cerrar las ampollas.","Frotar las ampollas y retirar la piel dañada.","Enfriar con agua fría o compresas, no poner hielo ni pomadas y cubrir con gasas limpias.","Dar agua por vía oral y mantener la lesión descubierta."],2,"Las ampollas con afectación de epidermis y dermis corresponden a segundo grado; el texto recomienda enfriar sin hielo, no aplicar pomadas y cubrir con gasas limpias."],
+["Casos integrados","Tras un golpe, una víctima tiene deformidad de la pierna y una herida de la que sobresale el hueso. ¿Qué conjunto de decisiones es coherente con el tema?",["Intentar colocar el hueso y pedir a la persona que apoye el pie.","Evitar movimientos, tratar la hemorragia si existe, inmovilizar y organizar la asistencia sin recolocar el hueso expuesto.","Aplicar frío y dejar la herida descubierta para comprobar la deformidad.","Realizar un traslado en silla de la reina aunque exista sospecha de lesión vertebral."],1,"Es compatible con fractura abierta; se evita movimiento, se trata la hemorragia, se inmoviliza y se evita intentar recolocar el hueso expuesto."],
+["Casos integrados","Una persona inconsciente tras un accidente respira, pero se sospecha una lesión de columna. Un compañero insiste en ponerla de lado. ¿Qué decisión está más alineada con el texto?",["Colocarla siempre de lado porque la inconsciencia prevalece sobre cualquier lesión.","Darle agua y comprobar si vuelve a hablar.","Sentarla para proteger la respiración.","No moverla si el traumatismo hace sospechar lesión vertebral, vigilar sus signos vitales y esperar asistencia."],3,"El texto indica no mover a la persona inconsciente que respira si presenta traumatismo, y vigilarla hasta la llegada de ayuda."],
+["Casos integrados","Tras un accidente colectivo se observa una hemorragia por el oído tras un golpe craneal. Un trabajador quiere introducir una gasa para taponarla. ¿Qué explicación es la más adecuada según el tema?",["No se debe intentar detener ni taponar la otorragia, porque puede asociarse a lesión craneal grave; se requiere traslado hospitalario rápido.","Toda sangre del oído se trata igual que una hemorragia capilar superficial.","Debe aplicarse presión profunda y mantener el oído hacia arriba.","La otorragia no requiere actuación ni valoración posterior."],0,"El material resalta que la otorragia puede relacionarse con traumatismo craneal y que no se debe impedir la salida de la sangre; se traslada rápidamente."],
+["Casos integrados","Un equipo dispone de una camilla y cuatro socorristas; la víctima presenta un traumatismo y se necesita mantener el cuerpo alineado. ¿Qué opción de traslado corresponde al ejemplo del tema?",["Arrastrar con un solo socorrista sujeto por los tobillos.","Hacer que la víctima se siente sobre las manos entrelazadas.","Utilizar la técnica del puente coordinando a tres socorristas para elevar el cuerpo como un bloque y otro para colocar la camilla.","Pedir que la víctima camine lentamente hasta la camilla."],2,"El tema describe el puente con tres socorristas que levantan la víctima de forma coordinada y otro que desliza la camilla debajo."],
+["Casos integrados","Una persona presenta sangrado por la nariz y otro accidentado tiene un sangrado abundante que sale a pulsos de una herida en el brazo. ¿Qué diferenciación es correcta?",["Ambas situaciones deben tratarse inclinando la cabeza hacia atrás.","Para la epistaxis, sentar e inclinar la cabeza hacia delante y comprimir las fosas; la hemorragia arterial externa requiere actuación rápida y compresión de la herida.","El sangrado a pulsos indica una hemorragia capilar, mientras que la epistaxis indica luxación.","Ambas se resuelven administrando agua y esperando a que cese el sangrado."],1,"El tema describe la epistaxis con postura sentada, cabeza hacia delante y compresión nasal; la hemorragia arterial se reconoce por su salida pulsátil y exige atención rápida."],
+["Casos integrados","Un compañero propone movilizar a una víctima con posible lesión de columna porque la ambulancia tardará varios minutos. La escena es segura y ya se ha llamado al 112. ¿Qué principio debe prevalecer?",["La necesidad de comprobar la movilidad mediante una marcha breve.","La conveniencia de trasladarla por cualquier medio para ahorrar tiempo.","La obligación de aplicar la técnica de la silla de la reina.","No mover innecesariamente a la víctima; tranquilizarla, vigilarla y esperar las instrucciones y ayuda especializada."],3,"Si no existe un peligro que obligue a mover a la víctima, el tema recomienda no hacerlo ante sospecha de lesión vertebral y pedir ayuda urgente."]
+];
+
+const META=[
+["Principios de actuación y PAS","🛡️","PAS, seguridad de escena y principios generales"],
+["Triaje","🚦","Clasificación y prioridad de las víctimas"],
+["Botiquín en la empresa","🧰","Material, señalización y mantenimiento"],
+["Valoración inicial y quemaduras","🔥","Fases de valoración, gravedad y cuidados iniciales"],
+["Hemorragias","🩸","Tipos, señales y primera actuación"],
+["Traumatismos","🦴","Fracturas, esguinces y luxaciones"],
+["Inconsciencia, respiración y RCP","❤️","Valoración de consciencia, respiración y actuación descrita"],
+["Traslado de accidentados","🛏️","Inmovilización, medios y técnicas de traslado"],
+["Casos integrados","🧩","Aplicación razonada de varios contenidos"]
+];
+
+const LETTERS=["A","B","C","D"];
+let topic="Todo el tema",bank=[],index=0,choice=null,checked=false,results=[],startAt=0,wrongReview=false,lastTitle="";
+const $=id=>document.getElementById(id);
+
+function shuffle(a){
+  a=a.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function esc(s){
+  return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function getPool(){
+  return topic==="Todo el tema"?Q.slice():Q.filter(q=>q[0]===topic);
+}
+function renderTopics(){
+  const root=$("topics");
+  root.innerHTML="";
+  const all=document.createElement("button");
+  all.type="button";
+  all.className="topic"+(topic==="Todo el tema"?" selected":"");
+  all.setAttribute("aria-pressed",String(topic==="Todo el tema"));
+  all.innerHTML='<span class="ico">🧡</span><strong>Todo el tema</strong><small>'+Q.length+' preguntas · Todos los bloques</small>';
+  all.onclick=()=>{
+    topic="Todo el tema";
+    renderTopics();
+    updateSelection();
+  };
+  root.appendChild(all);
+  META.forEach(m=>{
+    let n=Q.filter(q=>q[0]===m[0]).length;
+    let b=document.createElement("button");
+    b.type="button";
+    b.className="topic"+(topic===m[0]?" selected":"");
+    b.setAttribute("aria-pressed",String(topic===m[0]));
+    b.innerHTML='<span class="ico">'+m[1]+'</span><strong>'+esc(m[0])+'</strong><span class="muted">'+esc(m[2])+'</span><small>'+n+' preguntas disponibles</small>';
+    b.onclick=()=>{
+      topic=m[0];
+      renderTopics();
+      updateSelection();
+    };
+    root.appendChild(b);
+  });
+}
+function updateSelection(){
+  let pool=getPool(),val=$("amount").value;
+  let requested=val==="all"?pool.length:Number(val);
+  let num=Math.min(requested,pool.length);
+  $("selection").textContent=topic+" · "+num+(num===1?" pregunta":" preguntas");
+  $("amountNote").textContent=num<requested
+    ?"Este bloque contiene "+pool.length+" preguntas; se usarán todas las disponibles."
+    :"Hay "+pool.length+" preguntas disponibles para esta selección.";
+}
+function showScreen(s){
+  $("home").style.display=s==="home"?"block":"none";
+  $("test").style.display=s==="test"?"block":"none";
+  $("results").style.display=s==="results"?"block":"none";
+  $("reviewPanel").style.display=s==="results"?"block":"none";
+  if(s==="home")$("reviewPanel").classList.add("hide");
+}
+function home(){
+  showScreen("home");
+  renderTopics();
+  updateSelection();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function startTest(){
+  let pool=getPool();
+  if(!pool.length)return;
+  let val=$("amount").value;
+  let n=Math.min(val==="all"?pool.length:Number(val),pool.length);
+  bank=shuffle(pool).slice(0,n);
+  index=0;
+  choice=null;
+  checked=false;
+  results=[];
+  wrongReview=false;
+  startAt=Date.now();
+  lastTitle=topic;
+  $("topicPill").textContent=topic;
+  showScreen("test");
+  renderQuestion();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderQuestion(){
+  let q=bank[index];
+  choice=null;
+  checked=false;
+  $("counter").textContent="Pregunta "+(index+1)+" de "+bank.length;
+  $("answered").textContent="Respuestas comprobadas: "+results.length;
+  $("qTopic").textContent=q[0];
+  $("question").textContent=q[1];
+  let pct=Math.round(index/bank.length*100);
+  $("bar").style.width=pct+"%";
+  $("progress").setAttribute("aria-valuenow",String(pct));
+  let root=$("options");
+  root.innerHTML="";
+  q[2].forEach((text,i)=>{
+    let b=document.createElement("button");
+    b.type="button";
+    b.className="option";
+    b.setAttribute("aria-pressed","false");
+    b.innerHTML='<span class="letter">'+LETTERS[i]+'</span><span>'+esc(text)+'</span>';
+    b.onclick=()=>pick(i);
+    root.appendChild(b);
+  });
+  $("feedback").className="feedback";
+  $("feedback").innerHTML="";
+  $("check").disabled=true;
+  $("next").disabled=true;
+  $("next").textContent=index===bank.length-1?"Ver resultados →":"Siguiente pregunta →";
+  $("check").style.display="inline-flex";
+  $("next").style.display="inline-flex";
+}
+function pick(i){
+  if(checked)return;
+  choice=i;
+  [...$("options").children].forEach((b,j)=>{
+    b.classList.toggle("selected",i===j);
+    b.setAttribute("aria-pressed",String(i===j));
+  });
+  $("check").disabled=false;
+}
+function checkAnswer(){
+  if(choice===null||checked)return;
+  checked=true;
+  let q=bank[index],ok=choice===q[3];
+  results.push({q,choice,ok});
+  [...$("options").children].forEach((b,i)=>{
+    b.disabled=true;
+    b.classList.remove("selected");
+    b.setAttribute("aria-pressed","false");
+    if(i===q[3])b.classList.add("correct");
+    if(i===choice&&!ok)b.classList.add("incorrect");
+  });
+  let fb=$("feedback");
+  fb.className="feedback show "+(ok?"good":"bad");
+  fb.innerHTML='<div class="ftitle">'+(ok?'✓ ¡Respuesta correcta!':'✕ Respuesta incorrecta')+'</div><div>'+(ok?'Has seleccionado la opción adecuada.':'La respuesta correcta es <strong>'+LETTERS[q[3]]+') '+esc(q[2][q[3]])+'</strong>.')+'</div><p><strong>Justificación:</strong> '+esc(q[4])+'</p>';
+  $("check").disabled=true;
+  $("next").disabled=false;
+  $("answered").textContent="Respuestas comprobadas: "+results.length;
+}
+function nextQuestion(){
+  if(!checked)return;
+  index++;
+  if(index>=bank.length)finish();
+  else{
+    renderQuestion();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+}
+function fmtTime(ms){
+  let s=Math.max(0,Math.floor(ms/1000));
+  return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+}
+function finish(){
+  showScreen("results");
+  let total=results.length;
+  let right=results.filter(r=>r.ok).length;
+  let wrong=total-right;
+  let pct=total?Math.round(right/total*100):0;
+  $("bar").style.width="100%";
+  $("progress").setAttribute("aria-valuenow","100");
+  $("percent").textContent=pct+"%";
+  $("rightNum").textContent=right;
+  $("wrongNum").textContent=wrong;
+  $("doneNum").textContent=total;
+  $("elapsed").textContent=fmtTime(Date.now()-startAt);
+  $("resultIntro").textContent="Has completado "+total+" pregunta(s) de «"+lastTitle+"».";
+  let msg=pct>=90
+    ?"¡Excelente! Has demostrado un dominio muy sólido. Revisa los pequeños matices y vuelve a practicar para consolidarlos."
+    :pct>=75
+    ?"¡Buen trabajo! Comprendes la mayoría de los contenidos. Repasa las explicaciones de los errores."
+    :pct>=50
+    ?"Vas progresando. Revisa los bloques con más errores y vuelve a intentarlo."
+    :"Utiliza las explicaciones como guía de estudio y vuelve a practicar los apartados que te resulten más difíciles.";
+  $("resultMessage").className="feedback show "+(pct>=75?"good":"bad");
+  $("resultMessage").innerHTML='<div class="ftitle">'+(pct>=75?"Buen resultado":"Sigue practicando")+'</div><div>'+msg+'</div>';
+  $("retryWrong").disabled=wrong===0;
+  $("retryWrong").textContent=wrong?"Practicar errores ("+wrong+")":"No hay errores que practicar";
+  buildReview();
+  $("toggleReview").textContent="Ocultar revisión";
+  $("reviewPanel").classList.remove("hide");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function buildReview(){
+  let root=$("reviewList");
+  root.innerHTML="";
+  results.forEach((r,i)=>{
+    let q=r.q,d=document.createElement("div");
+    d.className="review";
+    d.innerHTML='<h4>'+(i+1)+'. '+esc(q[1])+'</h4><p class="'+(r.ok?'goodtxt':'badtxt')+'"><strong>Tu respuesta:</strong> '+LETTERS[r.choice]+') '+esc(q[2][r.choice])+'</p>'+(r.ok?'':'<p class="goodtxt"><strong>Respuesta correcta:</strong> '+LETTERS[q[3]]+') '+esc(q[2][q[3]])+'</p>')+'<p><strong>Justificación:</strong> '+esc(q[4])+'</p>';
+    root.appendChild(d);
+  });
+}
+function retryWrong(){
+  let wrong=results.filter(r=>!r.ok).map(r=>r.q);
+  if(!wrong.length)return;
+  bank=shuffle(wrong);
+  index=0;
+  choice=null;
+  checked=false;
+  results=[];
+  wrongReview=true;
+  startAt=Date.now();
+  lastTitle="Repaso de errores";
+  $("topicPill").textContent=lastTitle;
+  showScreen("test");
+  renderQuestion();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+$("amount").addEventListener("change",updateSelection);
+$("start").addEventListener("click",startTest);
+$("check").addEventListener("click",checkAnswer);
+$("next").addEventListener("click",nextQuestion);
+$("homeFromTest").addEventListener("click",home);
+$("homeFromResults").addEventListener("click",home);
+$("retryWrong").addEventListener("click",retryWrong);
+$("toggleReview").addEventListener("click",()=>{
+  let p=$("reviewPanel");
+  p.classList.toggle("hide");
+  $("toggleReview").textContent=p.classList.contains("hide")?"Mostrar revisión":"Ocultar revisión";
+});
+renderTopics();
+updateSelection();
+if(Q.length!==150){
+  console.error("El banco debería contener 150 preguntas; contiene "+Q.length);
+}
+</script>
+</body>
+</html>
